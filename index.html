@@ -3,102 +3,18 @@
 
 <head>
     <meta charset=utf-8 />
-    <title>Lab 01 Template</title>
+    <title>Housing Vacancies</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+    <link href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+    <link href="css/style.css" rel='stylesheet'>
 
-    <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.js"></script>
-
-
-
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: whitesmoke;
-            font-family: Lato, sans-serif;
-            color: #0D0000;
-        }
-        
-        header {
-            width: 80%;
-            margin: 10px auto 10px auto;
-        }
-        
-        h1 {
-            display: inline-block;
-            margin-right: 20px;
-            color: #001323;
-        }
-        
-        h2 {
-            display: inline-block;
-            color: #001323;
-        }
-        
-        #map {
-            width: 80%;
-            height: 540px;
-            margin: 10px auto 10px auto;
-            background: whitesmoke;
-            border: 2px solid #dddedf;
-        }
-        
-        footer {
-            width: 80%;
-            margin: 10px auto 10px auto;
-        }
-        
-        p {
-            font-size: 1em;
-            color: #001323;
-        }
-        
-        .legend {
-            padding: 6px 8px;
-            font-size: 1em;
-            /* background: rgba(255, 255, 255, 0.8);
-            background: whitesmoke;  */
-            box-shadow: 0 0 5px;
-            border-radius: 5px;
-            font-family: Lato, sans-serif;
-        }
-        
-        .legend h3 {
-            font-size: 1.1em;
-            font-weight: normal;
-            color: #001323;
-            margin: 0 0 10px 0;
-        }
-        
-        .legend span {
-            width: 20px;
-            height: 20px;
-            float: left;
-            margin: 0 10px 4px 0;
-            border: solid 1.5px;
-        }
-        
-        .legend label {
-            font-size: 1.1em;
-        }
-        
-        .legend label:after {
-            content: '';
-            display: block;
-            clear: both;
-        }
-    </style>
 </head>
 
 <body>
     <header>
         <h1>Percentage of Housing Units That Are Vacant In Kentucky Counties</h1>
-
     </header>
 
     <div id='map'></div>
@@ -106,153 +22,12 @@
     <footer>
         <p>Map authored by Sebastian Hancock</p>
         <p>This map shows the percentage of vacant housing in each county of Kentucky. The percentage was calculated by diving the number of vacancies per county by the total number of housing units per county.</p>
-        <p>The symbology of the map absolutely influences and distorts the representation of the data. All maps distort data to some extent, especially choropleth maps. Just by using a red color scheme, the viewer is influeced to think that a higher vacany is a negative statistic (which, frankly, it is most of the time). The breaks, or groups, also distort the representation by lumping together counties that might have a 4% difference in vacancy. At the same time, the breaks also make it easier to understand the data. Symbology is about managing the distortion of data and trying to represent it as realistically and succinctly as possible.</p>
-        <p>The map could certainly be used to argue a point of a view, however, by itself it does not. Maybe The local government of Lyon County could use this map to petition the state government for more state-sponsored economic development programs that would bring people to the area. A real estate company could use this map to argue which counties they should be focusing their efforts on. </p>
     </footer>
 
-    <script>
-        //map options
-        var options = {
-            center: [37.8, -85.8],
-            zoom: 7.4,
-            zoomControl: false
-        }
-
-        //initialize map
-        var map = L.map('map', options);
-
-
-        //vacant housing units
-        var attributeValue = "VACANT",
-            //total housing units
-            normValue = "TOTAL";
-
-
-        //loads json, THEN calls function with 'data' being the json
-        $.getJSON("ky_counties_housing.json", function (data) {
-            //styles the data initially
-            var dataLayer = L.geoJson(data, {
-                style: function (feature) {
-                    return {
-                        color: '#dddddd',
-                        weight: 1,
-                        fillOpacity: 1,
-                        fillColor: '#1f78b4'
-                    };
-                }
-            }).addTo(map);
-            //calls drawMap function here so we 
-            //get access to dataLayer
-            drawMap(dataLayer);
-        });
-
-
-        function drawMap(dataLayer) {
-
-            //gets breaks for choropleth
-            var breaks = getClassBreaks(dataLayer);
-
-            dataLayer.eachLayer(function (layer) {
-
-                //so I don't have to type it out each time
-                var props = layer.feature.properties;
-                //normalized vacany per total housing units
-                var normalized = (Number(props[attributeValue]) / Number(props[normValue]));
-
-                //tooltip content
-                var content = "<b>" + props.NAME + " County</b><br>" + attributeValue + ": " +
-                    (normalized * 100).toFixed(2) + "%";
-
-                //set style of each county by vacancy
-                //then bind tooltip to each layer
-                layer.setStyle({
-                    fillColor: getColor(normalized, breaks)
-                }).bindTooltip(content);
-            });
-
-            //add the legend here so we can access breaks
-            drawLegend(breaks);
-        }
-
-        //creates class breaks using Simple Statistics
-        function getClassBreaks(dataLayer) {
-
-            //empty array to push values into
-            var values = [];
-
-            dataLayer.eachLayer(function (layer) {
-
-                //normalize value
-                var value = Number(layer.feature.properties[attributeValue]) / Number(layer.feature.properties[normValue]);
-                //add it to the array
-                values.push(value);
-            });
-
-            //create 5 breaks (deteremine 5 clusters)
-            var clusters = ss.ckmeans(values, 5);
-
-            // create an array of the lowest value and highest
-            //value within each cluster
-            var breaks = clusters.map(function (cluster) {
-                return [cluster[0], cluster.pop()];
-            });
-
-            return breaks;
-        }
-
-        //returns the color of the county based on the vacancy value
-        function getColor(d, breaks) {
-
-            if (d <= breaks[0][1]) {
-                return '#fee5d9';
-            } else if (d <= breaks[1][1]) {
-                return '#fcae91';
-            } else if (d <= breaks[2][1]) {
-                return '#fb6a4a';
-            } else if (d <= breaks[3][1]) {
-                return '#de2d26'
-            } else if (d <= breaks[4][1]) {
-                return '#a50f15'
-            }
-        }
-
-        //creates the legend
-        function drawLegend(breaks) {
-
-            //positions the legend in the top left
-            var legend = L.control({
-                position: 'topleft'
-            });
-
-            //on adding the legend, do this:
-            legend.onAdd = function () {
-                //creates the div for the legend
-                var div = L.DomUtil.create('div', 'legend');
-
-                //adds first line of legend
-                div.innerHTML = "<h3>" + attributeValue + " per " + normValue + "</h3>";
-
-                //loop through the breaks, and add the colored square
-                //plus the value ranges
-                for (var i = 0; i < breaks.length; i++) {
-
-                    var color = getColor(breaks[i][0], breaks);
-
-                    div.innerHTML +=
-                        '<span style="background:' + color + '"></span> ' +
-                        '<label>' + (breaks[i][0] * 100).toLocaleString() + '%' + ' &mdash; ' +
-                        (breaks[i][1] * 100).toLocaleString() + '%' + '</label>';
-                }
-
-                return div;
-            };
-
-            //add the legend to the map after the data's been added 
-            //to it
-            legend.addTo(map);
-
-        }
-    </script>
+    <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.js"></script>
+    <script src="js/script.js"></script>
 
 </body>
 
