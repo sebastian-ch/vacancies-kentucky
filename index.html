@@ -3,25 +3,123 @@
 
 <head>
     <meta charset=utf-8 />
+<<<<<<< HEAD
     <title>Housing Vacancies</title>
+=======
+    <title>Vacant Housing Units in Kentucky Counties</title>
+>>>>>>> origin/master
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
     <link href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href="css/style.css" rel='stylesheet'>
 
+<<<<<<< HEAD
+=======
+    <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.js"></script>
+
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        
+        header {
+            width: 80%;
+            margin: 10px auto 10px auto;
+        }
+        
+        h1 {
+            display: inline-block;
+            margin-right: 20px;
+            color: #001323;
+        }
+        
+        h2 {
+            display: inline-block;
+            color: #001323;
+        }
+
+        #map {
+            width: 80%;
+            height: 540px;
+            margin: 10px auto 10px auto;
+            background: whitesmoke;
+            border: 2px solid #dddedf;
+        }
+        
+        footer {
+            width: 80%;
+            margin: 10px auto 10px auto;
+        }
+        
+        p {
+            font-size: 1em;
+            color: #001323;
+        }
+        
+        .legend {
+            padding: 6px 8px;
+            font-size: 1em;
+            box-shadow: 0 0 5px;
+            border-radius: 5px;
+            font-family: Lato, sans-serif;
+        }
+        
+        .legend h3 {
+            font-size: 1.1em;
+            font-weight: normal;
+            color: #001323;
+            margin: 0 0 10px 0;
+        }
+        
+        .legend span {
+            width: 20px;
+            height: 20px;
+            float: left;
+            margin: 0 10px 4px 0;
+            border: solid 1.5px;
+        }
+        
+        .legend label {
+            font-size: 1.1em;
+        }
+        
+        .legend label:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+    </style>
+>>>>>>> origin/master
 </head>
 
 <body>
     <header>
+<<<<<<< HEAD
         <h1>Percentage of Housing Units That Are Vacant In Kentucky Counties</h1>
+=======
+        <h1>Percentage of Vacant Housing Units in Kentucky Counties</h1>
+
+>>>>>>> origin/master
     </header>
 
     <div id='map'></div>
 
     <footer>
         <p>Map authored by Sebastian Hancock</p>
+<<<<<<< HEAD
         <p>This map shows the percentage of vacant housing in each county of Kentucky. The percentage was calculated by diving the number of vacancies per county by the total number of housing units per county.</p>
+=======
+        <p>This map shows the percentage of vacant housing units in each county of Kentucky.</p>
+>>>>>>> origin/master
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
